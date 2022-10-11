@@ -1,5 +1,6 @@
 // Original project
 // https://codepen.io/umarcbs/pen/QWEbWLx
+
 const records = ["A", "AAAA", "CAA", "CNAME", "MX", "NS", "TXT", "SRV"];
 
 const dnsFetch = async (type, target) => {

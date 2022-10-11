@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>DNS lookup</title>
+  <style>
+    html,body{height:100%;margin:0;padding:0;background-color:#000}body{font-family:sans-serif;display:flex;vertical-align:middle}form{position:relative;width 33.3%;min-width:200px;max-width:75%;height:30%;min-height:230px;display:inline-block;margin:auto auto;padding:35px 0;border:0;text-align:center}input{font-size:16px;border:0;outline:none;padding:.7em;box-shadow:0 1px 2px 0 #888;display:inline-block;padding:.8em;border-radius:6px;background-color:#fff;min-width:500px;transition:.25s ease-in-out;margin-top:-25px}input:hover{box-shadow:0 5px 25px 0 hsl(0,0%,50%);transition:.1s ease-in-out;padding:.55em;margin-bottom:.25em}code{padding:.7em;box-shadow:0 1px 2px 0 #888;display:inline-block;padding:.8em;border-radius:6px;background-color:#fff;margin-top:1.5em;text-align:left;white-space:pre}
+  </style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<form id="form">
+  <input type='text' maxwidth='80' placeholder="Enter Domain Name and hit enter" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter Domain Name and hit enter'" autofocus required id="input"/><br/>
+
+  <code id="data"></code>
+</form>
+<!-- partial -->
+  <script>
+    const records=["A","AAAA","CAA","CNAME","MX","NS","TXT","SRV"];const dnsFetch=async(type,target)=>{const res=await fetch(`https://cloudflare-dns.com/dns-query?name=${target}&type=${type}`,{headers:{Accept:"application/dns-json",},});if(!res.ok){throw res}
+    const i=await res.json();return i.Answer?i.Answer:[]}
+    const dnsRecords=async target=>{const results={};const promises=[];records.forEach(type=>{const promise=dnsFetch(type,target).then(response=>{results[type]=response}).catch(err=>{console.error(err);results[type]=[]});promises.push(promise)});await Promise.all(promises);return results}
+    document.getElementById("form").addEventListener("submit",e=>{e.preventDefault();const target=document.getElementById("input").value;dnsRecords(target).then(data=>{document.getElementById("data").textContent=JSON.stringify(data,null,2)})})
+  </script>
+
+</body>
+</html>
